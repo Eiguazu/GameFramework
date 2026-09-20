@@ -32,6 +32,11 @@ namespace GameFramework
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             assetManager = new AssetManager(Content);
+
+            // The AssetManager now exists, so animations can be registered and objects
+            // that use AssetManager.Instance can be created safely.
+            Scene scene = new Scene();
+            _engine = new Engine(scene);
         }
 
         protected override void Update(GameTime gameTime)
@@ -48,7 +53,8 @@ namespace GameFramework
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
+            // For pixel art
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
             _engine.Draw(_spriteBatch);
 

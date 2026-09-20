@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GameFramework.Content.Engine
 {
@@ -23,19 +24,19 @@ namespace GameFramework.Content.Engine
             Objects.Remove(gameObject);
         }
 
-        // Updates gametime for all objects in a scene. 
+        // Updates gametime for all objects in a scene. ToArray mkakes so the forech deos not throw a invalid operation exception. 
         public virtual void Update(GameTime gameTime)
         {
-            foreach (GameObject gameObject in Objects)
+            foreach (GameObject gameObject in Objects.ToArray())
             {
                 gameObject.Update(gameTime);
             }
         }
 
-        // Draws all objects in a scene. 
+        // Draws all objects in a scene. ToArray mkakes so the forech deos not throw a invalid operation exception. 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            foreach (GameObject gameObject in Objects)
+            foreach (GameObject gameObject in Objects.ToArray())
             {
                 gameObject.Draw(spriteBatch);
             }

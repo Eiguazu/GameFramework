@@ -35,6 +35,9 @@ namespace GameFramework.Content.Engine
                 string name = sprite.ToString();
                 Texture2D texture = content.Load<Texture2D>(name);
                 textures.Add(sprite, texture);
+
+                // If given generic pipeline error you have to trace back, check that Conten.mgcb contains a correctly named asset.
+                // Also throws an ArgumentException if that key is already in the dictionary.
             }
         }
 
@@ -56,7 +59,7 @@ namespace GameFramework.Content.Engine
         // Loads animations.
         public void LoadAnimation(string animationName, params Sprites[] frames)
         {
-            animations.Add(animationName, new List<Sprites>(frames));
+            animations[animationName] = new List<Sprites>(frames);
         }
 
         // Gets the number of frames in an animation
