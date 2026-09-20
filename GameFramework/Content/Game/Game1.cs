@@ -7,6 +7,7 @@ namespace GameFramework
 {
     public class Game1 : Game
     {
+        private AssetManager assetManager;
         private Engine _engine;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -30,8 +31,7 @@ namespace GameFramework
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
+            assetManager = new AssetManager(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -55,8 +55,6 @@ namespace GameFramework
             _spriteBatch.End();
 
             base.Draw(gameTime); 
-
-            base.Draw(gameTime);
         }
     }
 }
