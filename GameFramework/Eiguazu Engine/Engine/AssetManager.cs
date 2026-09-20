@@ -1,12 +1,8 @@
 ﻿using GameFramework.Content.Game;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameFramework.Content.Engine
 {
@@ -23,7 +19,7 @@ namespace GameFramework.Content.Engine
         private static AssetManager instance;
 
         // Animation Logic
-        private Dictionary<string, List<Sprites>> animations; 
+        private Dictionary<string, List<Sprites>> animations;
 
         // When someone creates an AssetManager they must give a ContentManager to inialize content. 
         public AssetManager(ContentManager content)
@@ -38,14 +34,14 @@ namespace GameFramework.Content.Engine
             {
                 string name = sprite.ToString();
                 Texture2D texture = content.Load<Texture2D>(name);
-                textures.Add(sprite, texture); 
+                textures.Add(sprite, texture);
             }
         }
 
         // Gets the Texture2D from the enum list when given a sprites ID. 
         public Texture2D GetTexture(Sprites sprites)
         {
-            return textures[sprites]; 
+            return textures[sprites];
         }
 
         //Allows other classes to acess the AssetManager Instance. 

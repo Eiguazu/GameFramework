@@ -1,17 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameFramework.Content.Engine
 {
     public class Animation
     {
         //
-        private string currentAnimation; 
+        private string currentAnimation;
         // Current frame of animation sequence.
         private int currentFrame;
 

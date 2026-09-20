@@ -1,10 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework; 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GameFramework.Content.Engine
 {
@@ -15,6 +10,9 @@ namespace GameFramework.Content.Engine
 
         // Control for sprite rendering.
         public SpriteRenderer SpriteRenderer { get; } = new SpriteRenderer();
+
+        // Collider uses GameObject's transform and scale to scale box properly to texture. 
+        public Collider Collider { get; } = new Collider();
 
         // Monogame calls Game1.Updtae as part of its loop, my framework will eventually pass that update down. 
         public virtual void Update(GameTime gameTime)
@@ -27,6 +25,7 @@ namespace GameFramework.Content.Engine
         {
             SpriteRenderer.Draw(spriteBatch, Transform);
         }
+
 
     }
 }

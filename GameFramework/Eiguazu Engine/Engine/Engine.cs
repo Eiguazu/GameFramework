@@ -1,10 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameFramework.Content.Engine
 {
@@ -34,7 +29,7 @@ namespace GameFramework.Content.Engine
         // If the current scene exits, it is drawn. Draw is passed down the hierarchy. 
         public void Draw(SpriteBatch spriteBatch)
         {
-            CurrentScene?.Draw(spriteBatch); 
+            CurrentScene?.Draw(spriteBatch);
         }
     }
 }

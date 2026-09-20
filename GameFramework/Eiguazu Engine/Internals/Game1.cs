@@ -23,7 +23,7 @@ namespace GameFramework
         {
             Scene scene = new Scene();
 
-            _engine = new Engine(scene); 
+            _engine = new Engine(scene);
 
             base.Initialize();
         }
@@ -54,7 +54,15 @@ namespace GameFramework
 
             _spriteBatch.End();
 
-            base.Draw(gameTime); 
+            base.Draw(gameTime);
+        }
+
+        public void SetWindowSize(int width, int height)
+        {
+            _graphics.PreferredBackBufferWidth = width;
+            _graphics.PreferredBackBufferHeight = height;
+
+            _graphics.ApplyChanges();
         }
     }
 }

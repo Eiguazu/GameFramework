@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GameFramework.Content.Game
+﻿namespace GameFramework.Content.Game
 {
     // Enum for storing the sprites. Default exampels are listed. 
     public enum Sprites
