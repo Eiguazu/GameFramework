@@ -1,1 +1,121 @@
-no code here rn documentation explanation 
+Going from a gameengine like Unity or Gamemaker to MonoGame was really weird, so I made this to make my life easier in the future. 
+
+This guide will walk you through the thought process behind writing the framework and the logic requried as well as all the different functions. 
+The examples to illustrate how it might be used are based on assignment one, Falling Raindrops. This guide and framework will be updated in the future
+if newer functions are needed, but it serves as a good enough base to work off of. 
+
+
+
+INTODUCTION------
+
+The idea behind this Engine was the Engine code provides reusable funcitonality and the game code provides the content that uses that functionality. 
+
+The code is split into two folders. For Engine, you should not need to edit it while making a game, however some things like gameobject may need to be edited 
+for the sake of ease. For everythign in Initalizer and Game, you should be able edit and write code in there however you choose. 
+
+The ownership chain looks somewhat like this
+Game1 (MonoGame's enetry point)
+Engine (which scene is active)
+Scene (list of GameObjects)
+Gameobject -> Transform, SpriteRenderer, Animation, Collider
+
+I used the chain to create a pipeline from Game1.Update and Game1.Draw . Monogame calls update and Draw about 60 times per second. The framework passes those calls down the chain. 
+Update: Game1.Update -> Engine.Update -> Scene.Update -> GameObject.Update - > Animation.Update
+Draw: Game1.Draw -> Engine.Draw -> Scene.Draw -> GameObject.Draw -> SpriteRenderer.Draw
+
+
+
+SETUP------
+
+To add a image to the content pipline, open content.mgcb like how you normally add sprites into the game. The asset name used in the SPRITES ENUM is the file name without the extentision,
+so things like PlayerIdle0.png become PlayerIdle0. After adding it to content mgcb, add the same name to the sprites enum. So something like:
+
+public enum Sprites
+{
+	PlayerIdle0, 
+	PlayerIdle1,
+	Raindrop,
+	Door
+}
+
+The spelling and cpailaization must EXACTLY match the asset name. Becuase I wrote AssetManager to load every enum entry at startup, an entry with no matching asset name 
+crashes the game when it launches.
+
+To actually draw the texture you also have to register it as a animation. This is because I coded every sprite to actually be a animation. If one wants a static sprite, they should 
+register the animation as a single image, and have it loop or not continously loop over that same image. This was done to streamline the process and not have seperate texture and 
+animation classes and functions. To register an animation, open GAME1 in internals and go to LoadContent. You should see a labeled spot for adding animation loading. The loading code should
+look something like this. 
+
+AssetManager.Instance.LoadAnimation("PlayerIdle", Sprites.PlayerIdle0, Sprites.PlayerIdle1);
+AssetManager.Instance.LoadAnimation("Door", Sprites.Door);
+
+The AssetManager keeps a dictionary called aniamtions. Everytime LoadAnimation is used, it adds a entery to that table with a name. For example, for the first LoadAnimation, 
+PlayerIdle would be the name with PlayerIdle0 and PlayerIdle1 in the list. If you register a name that already exists, it replaces the old list. LoadAnimation doesn't actually load 
+any images. They were already loaded when new Assetmanager(Content) was ran, loading the texture for every entry in the Sprites enum. 
+
+So to actually play the animation, you need to create a GameObject, position it, and play the animation. For instance in Game1 in the Objects location:
+
+GameObject door = new GameObject();
+door.Transform.Position = new vector2(740, 430)
+door.Animation.PlayLoop("Door")
+
+Transform position is one of the intial settings for door, along with rotation and size. Position places the sprite, rotation rotates, scale scales sprite texture. However in order to 
+see the object drawn, you have to add it to a scene. So in the scene section of Game1, add:
+
+defaultScene.Add(door);
+
+A scene is estianlly a container that holds GameObjects that are currently part of the gaem. You may have things such as a main menu scene, a level one scene, a level two scene, etc. The scene 
+owns the list of GameObjects, and scene.Add adds your GameObject to that scene. Currently, the default scene is "defaultScene", but you can change and add more at any time. It should look like
+this:
+
+Scene defaultScene = new Scene();
+
+Note that in the initalize, the engine, _engine, is set towards the "defaultScene." To change that to your new scene you would have to run an engine method that we will go into later
+There is no current transfer method built in my me, but since scene is just a List<GameObject>, you can remove an object from one scene and add it to another. 
+An object is invisiable until you have called PlayLoop or PlayOnce and one Update has run. Until then it has no texture, so nothing is drawn and it cannot collide. 
+
+
+
+CLASS REFERENCES------
+Here I want to go into the different classes and what they do. Again, they should not be edited but it is useful information to understanding what you can call or not.
+
+--Engine--
+The engine holds the one scen that is currently running and forwanrds Update and Draw to it. It gets this directly from Game1. It includes:
+CurrentScene - The active scene (read-only from the outside).
+Engine(Scene startingScene) - Creates the engine with the first scene.
+Update(GameTime) - Passes Update to the current scene (called by Game1). 
+Draw(SpriteBatch) - Passes Draw to the current scene (called by Game1).
+
+Methods
+ChangeScene(Scene newScene) - swaps to a different scene immediately
+ex. _engine.ChangeScene(door); 
+There will always be one engine that exists at a time, so all engines are refered to as _engine. 
+
+--Scene--
+A container for GameObjects. It updates and draws everything inside of it.
+
+Methods
+Add(GameObject) - Puts an object in the scene. It starts updating and drawing(next frame if added mid-update).
+Remove(GameObject) - Takes an object out. It stops updatign and drawing.
+Update(GameTime) - virtual. Updates every object within the scene. 
+Draw(SpriteBatch) - virtual. Draws every object. 
+
+A specific not about both Update(GameTime) and Draw(SpriteBatch) being virutal. This makes it overrideable if you want scenes such as custom scenes like menu, lobby, whatever. 
+To do this you have to make Scene the parrent of your custom scene. For example:
+
+Scene menu = new MenuScene();
+
+This is possible becuase a child class can be treated as its parent. You could then pass in menu into any ChangeScene method. Always call base.Update(gameTime) and base.Draw(spritebatch)
+inside of your overwritten Update and Draw functions, or the objects will stop updating and drawing. 
+Other things worth knowing are that adding and removing during Update is safe. The scene loops over a copy of its list. The list of objects in each scene is private. You should 
+keep your own references for anything you need to look at. 
+
+--GameObject--
+This is the most similar thing I could get to makign a object in GameMaker or Unity. It is the thing you make everything from, and it comes with a Transform, SpriteRender, Collider, and 
+Animation already attached. It doesn't come with many methods, but the field is acessed by SpriteRender for most of its funcitonality. 
+
+
+
+
+
+

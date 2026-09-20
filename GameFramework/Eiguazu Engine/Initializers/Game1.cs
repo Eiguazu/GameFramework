@@ -11,19 +11,21 @@ namespace GameFramework
         private Engine _engine;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Main main;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            main = new Main();
         }
 
         protected override void Initialize()
         {
-            Scene scene = new Scene();
-
-            _engine = new Engine(scene);
+            Scene defaultScene = new Scene();
+            _engine = new Engine(defaultScene);
 
             base.Initialize();
         }
@@ -33,10 +35,20 @@ namespace GameFramework
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             assetManager = new AssetManager(Content);
 
-            // The AssetManager now exists, so animations can be registered and objects
-            // that use AssetManager.Instance can be created safely.
-            Scene scene = new Scene();
-            _engine = new Engine(scene);
+            // ____________________________________
+            // Scene loading goes here
+            // Default scene provided in initialize
+            // ------------------------------------
+
+
+            // ___________________________
+            // Animation loading goes here
+            // ---------------------------
+
+
+            // ____________________________
+            // GameObject loading goes here
+            // ----------------------------
         }
 
         protected override void Update(GameTime gameTime)
@@ -45,6 +57,7 @@ namespace GameFramework
                 Exit();
 
             _engine.Update(gameTime);
+            main.Update(gameTime);
 
             base.Update(gameTime);
         }

@@ -14,7 +14,7 @@ namespace GameFramework.Content.Engine
         // Collider uses GameObject's transform and scale to scale box properly to texture. 
         public Collider Collider { get; } = new Collider();
 
-        //
+        // Gives every GameObject its own Animation component. 
         public Animation Animation { get; } = new Animation();
 
         // Monogame calls Game1.Updtae as part of its loop, my framework will eventually pass that update down. 
@@ -27,6 +27,12 @@ namespace GameFramework.Content.Engine
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             SpriteRenderer.Draw(spriteBatch, Transform);
+        }
+
+        // Returns true if this object's hitbox overlaps the other object's hitbox.
+        public bool Intersects(GameObject other)
+        {
+            return Collider.IsColliding(Transform, SpriteRenderer, other.Collider, other.Transform, other.SpriteRenderer);
         }
 
 
