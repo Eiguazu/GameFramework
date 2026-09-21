@@ -15,6 +15,7 @@ namespace GameFramework.Content.Engine
         public void Add(GameObject gameObject)
         {
             Objects.Add(gameObject);
+            gameObject.Scene = this;
         }
 
 
@@ -22,6 +23,7 @@ namespace GameFramework.Content.Engine
         public void Remove(GameObject gameObject)
         {
             Objects.Remove(gameObject);
+            gameObject.Scene = this;
         }
 
         // Updates gametime for all objects in a scene. ToArray mkakes so the forech deos not throw a invalid operation exception. 
@@ -40,6 +42,35 @@ namespace GameFramework.Content.Engine
             {
                 gameObject.Draw(spriteBatch);
             }
+        }
+
+        // Returns the first object with this tag, or null if none has it.
+        public GameObject Find(string tag)
+        {
+            for (int i = 0; i < Objects.Count; i++)
+            {
+                if (Objects[i].Tag == tag)
+                {
+                    return Objects[i];
+                }
+            }
+            return null;
+        }
+
+        // Returns a new list holding every object with this tag.
+        // It's a copy, so you can Add or Remove objects while looping over it.
+        public List<GameObject> FindAll(string tag)
+        {
+            List<GameObject> matches = new List<GameObject>();
+
+            for (int i = 0; i < Objects.Count; i++)
+            {
+                if (Objects[i].Tag == tag)
+                {
+                    matches.Add(Objects[i]);
+                }
+            }
+            return matches;
         }
 
     }
