@@ -13,6 +13,7 @@ namespace GameFramework
         private SpriteBatch _spriteBatch;
         private Main main;
 
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -24,9 +25,6 @@ namespace GameFramework
 
         protected override void Initialize()
         {
-            Scene defaultScene = new Scene();
-            _engine = new Engine(defaultScene);
-
             base.Initialize();
         }
 
@@ -35,10 +33,13 @@ namespace GameFramework
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             assetManager = new AssetManager(Content);
 
-            // ____________________________________
+            Scene defaultScene = new Scene();
+            _engine = new Engine(defaultScene);
+
+            // ____________________________
             // Scene loading goes here
-            // Default scene provided in initialize
-            // ------------------------------------
+            // Default scene provided above
+            // ----------------------------
 
 
             // ___________________________

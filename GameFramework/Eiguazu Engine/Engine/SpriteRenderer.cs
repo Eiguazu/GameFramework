@@ -27,9 +27,9 @@ namespace GameFramework.Content.Engine
         }
 
         // Allows for sprite flipping.
-        public void FlipHorizontally()
+        public void FlipHorizontally(bool direction)
         {
-            if (Effects != SpriteEffects.FlipHorizontally)
+            if (direction)
             {
                 Effects = SpriteEffects.FlipHorizontally;
             }
@@ -41,9 +41,9 @@ namespace GameFramework.Content.Engine
         }
 
         // Allows for sprite flipping.
-        public void FlipVertically()
+        public void FlipVertically(bool direction)
         {
-            if (Effects != SpriteEffects.FlipVertically)
+            if (direction)
             {
                 Effects = SpriteEffects.FlipVertically;
             }

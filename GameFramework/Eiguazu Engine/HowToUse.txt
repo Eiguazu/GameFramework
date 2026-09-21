@@ -63,7 +63,7 @@ So to actually play the animation, you need to create a GameObject, position it,
 Transform position is one of the intial settings for door, along with rotation and size. Position places the sprite, rotation rotates, scale scales sprite texture. However in order to 
 see the object drawn, you have to add it to a scene. So in the scene section of Game1, add:
 
-    defaultScene.Add(door);
+    _engine.CurrentScene(door);
 
 A scene is estianlly a container that holds GameObjects that are currently part of the gaem. You may have things such as a main menu scene, a level one scene, a level two scene, etc. The scene 
 owns the list of GameObjects, and scene.Add adds your GameObject to that scene. Currently, the default scene is "defaultScene", but you can change and add more at any time. It should look like
@@ -281,8 +281,7 @@ Every countdowsn has to have its own Timer object. Tow things sharing one Timer 
 
 --Game1--
 MonoGame's entry point instead of main for some reason. This connects MonoGame to my framework. 
-Game1() - Sets up stuff idk. 
-Initialize() - Creates the game engine and default scene. 
+Game1() - Sets up stuff idk.  
 LoadContent() - Runs once at startup. Creates the SpriteBatch, the Assetmanager, and all the other content I have labeled for adding. 
 Update(GameTime) - Updates both the game engine and Main if you use it. 
 Draw(GameTime) - Begins SpriteBatch with PointClamt, draws the engine, and then ends the batch. 
