@@ -14,7 +14,7 @@ The code is split into two folders. For Engine, you should not need to edit it w
 for the sake of ease. For everythign in Initalizer and Game, you should be able edit and write code in there however you choose. 
 
 The ownership chain looks somewhat like this
-Game1 (MonoGame's enetry point)
+Game1 (MonoGame's entry point)
 Engine (which scene is active)
 Scene (list of GameObjects)
 Gameobject -> Transform, SpriteRenderer, Animation, Collider
@@ -55,20 +55,21 @@ any images. They were already loaded when new Assetmanager(Content) was ran, loa
 
 So to actually play the animation, you need to create a GameObject, position it, and play the animation. For instance in Game1 in the Objects location:
 
-GameObject door = new GameObject();
-door.Transform.Position = new vector2(740, 430)
-door.Animation.PlayLoop("Door")
+    // Realistically you would make a child class of GameObject.
+    GameObject door = new GameObject();
+    door.Transform.Position = new vector2(740, 430)
+    door.Animation.PlayLoop("Door")
 
 Transform position is one of the intial settings for door, along with rotation and size. Position places the sprite, rotation rotates, scale scales sprite texture. However in order to 
 see the object drawn, you have to add it to a scene. So in the scene section of Game1, add:
 
-defaultScene.Add(door);
+    defaultScene.Add(door);
 
 A scene is estianlly a container that holds GameObjects that are currently part of the gaem. You may have things such as a main menu scene, a level one scene, a level two scene, etc. The scene 
 owns the list of GameObjects, and scene.Add adds your GameObject to that scene. Currently, the default scene is "defaultScene", but you can change and add more at any time. It should look like
 this:
 
-Scene defaultScene = new Scene();
+    Scene defaultScene = new Scene();
 
 Note that in the initalize, the engine, _engine, is set towards the "defaultScene." To change that to your new scene you would have to run an engine method that we will go into later
 There is no current transfer method built in my me, but since scene is just a List<GameObject>, you can remove an object from one scene and add it to another. 
@@ -162,14 +163,153 @@ FlipHorizontally() - Flips image horizontally.
 FlipVertically() - Flips image vertically.
 ex. 
     // Face the direction of movement (assuming the art faces right)
-    if (moveX < 0) SpriteRenderer.FlipHorizontally();
-    else if (moveX > 0) SpriteRenderer.Effects = SpriteEffects.None;
-
+    if (moveX < 0) 
+    {
+        SpriteRenderer.FlipHorizontally();
+    }
+    else if (moveX > 0) 
+    {
+        SpriteRenderer.Effects = SpriteEffects.None;
+    }
     // Flash red when hit
     SpriteRenderer.Color = Color.Red;
 
 --Animation--
 Animation remembers which animation is playing, which frame it's on, and how long that frame has been showing. 
+IsFinished - true once a PlayoNce animation reaches its last frame. Always false for loops. 
+frameDuration - Seconds each rame is shown. Default is 0.15. It belongs to this objects Animation and it stays set when you switch animations. 
+Update(GameTime) - Advances the animation and returns the current frame. 
+
+Methods
+PlayLoop(name) - Plays the animation over and over.
+PlayOnce(name) - Plays once and then holds the last frame.
+Play(name, loop, restart) - The shared mehtod behind both PlayLoop(name) and PlayOnce(name).
+
+Calling things like PlayLoop("Walk") every frame is safe. If "Walk is already looping, -nothing ever happens- so it doesn't restart. Playing a differetn name replaces the current animation
+and starts at frame zero. There is no queue. Calling things like PlayOnce("Attack') is also safe, but it woun't replay once finished. To replay, you have to use Play("Attack", false, true). 
+Nothing also automatically returns to another animation. When a PlayOnce finsihes, it holds the last frame until you play something else. If you misname anything, it is not registered with
+LoadAnimation and throws a KeyNotFoundException. 
+ex.
+    // Walk when moving, idle when still (safe to run every frame)
+    if (moving)
+    {
+        Animation.PlayLoop("PlayerWalk");
+    }
+    else  
+    {
+        Animation.PlayLoop("PlayerIdle");
+    }
+
+    // One-off animation, then go back to idle
+    if (hit) 
+    {
+        Animation.PlayOnce("PlayerHurt");
+    }
+    if (Animation.IsFinished) 
+    {
+        Animation.PlayLoop("PlayerIdle");
+    }
+
+    // Slower animation
+    Animation.frameDuration = 0.3;
+
+--AssetManager--
+This loads every image at starup and stores the named frame lists.
+Assetmanager(ContentManager) - Loads a texture for every entry in the Sprites enum. Done once in Game1.LoadContent. 
+AssetManager.Instance - Global access to the one AssetManager from everywhere. 
+
+Methods
+GetTexture(Sprites) - returns the Texture2D for a sprite.
+LoadAnimation(name, frame1, frame2, frame3... etc) - Registers a named list of frames. Registering the same name again replaces the old list. 
+GetAniamtionLength(name) - How many frames an animation has (used by Animation).
+GetAnimationFrame(name, frame) the texture for one frame (used by Animation). 
+ex.
+    AssetManager.Instance.LoadAnimation("RaccoonWalk", Sprites.RaccoonWalk0, Sprites.RaccoonWalk1);
+    AssetManager.Instance.LoadAnimation("Raindrop", Sprites.Raindrop);   
+    // still image = 1 frame
+
+Most of the time you will only call LoadAnimation. All the other methods are used internally.
+
+--Collider--
+Basically just a rectangel around the sripte. If the rectangle overlaps with another, that means a collicion has taken place and the two objects are touching. 
+sizeMultiplier - Default is 80% of the normal sprite size. this controls how big the hitbox is compared to the sprite. 
+
+Methods
+GetBounds(Transform, SpriteRender) - This returns the hitbox Rectangle. It is centered on the position of GameObject and is scaled up to match. 
+isColliding(transform, renderer, other, otherTransform, otherRenderer) - Returns true if the two hitboxes overlap. GameObject has a more simplified method for this. 
+ex.
+    // With the Intersects shortcut from section 4.3:
+    if (player.Intersects(door))
+    {
+        score++;
+    }
+
+    // Make a forgiving raindrop hitbox (half size)
+    drop.Collider.sizeMultiplier = 0.5f;
+
+This hitbox size comes from the current texture, so it follows the objects scale as it is scaled up and down. An object with no texture therefore has a empty hitbox and never collides. 
+The hitbox avoids rotation bc I was too lazy to implment that. 
+
+--Timer--
+A stopwatch that counts down in seconds based on gametime. You call it every frame, and it tells you whther its still counting.
+IsRunning - True if a countdown is in progress
+
+Methods
+GameTimer(GameTIme, seconds) - returns true while still counting, and false on the frame it finishes. it then automatically restarts once it is called again.
+Reset() - Cancels the countdown, so the next instance of GameTimer call starts fresh. 
+ex. 
+    // Repeating event: do something every 0.5 seconds.
+    //  False means done, so the cekc should be backwards. 
+    Timer spawnTimer = new Timer();
+
+    if (!spawnTimer.GameTimer(gameTime, 0.5))
+    {
+        SpawnRaindrop();   // runs once every 0.5 seconds
+    }
+
+    // One-time event: after 8 seconds, do it once
+    Timer raccoonTimer = new Timer();
+    bool raccoonActive = false;
+
+    if (!raccoonActive && !raccoonTimer.GameTimer(gameTime, 8))
+    {
+        // the flag stops it from repeating
+        raccoonActive = true;   
+    }
+
+Every countdowsn has to have its own Timer object. Tow things sharing one Timer will intefere with the other. 
+
+--Game1--
+MonoGame's entry point instead of main for some reason. This connects MonoGame to my framework. 
+Game1() - Sets up stuff idk. 
+Initialize() - Creates the game engine and default scene. 
+LoadContent() - Runs once at startup. Creates the SpriteBatch, the Assetmanager, and all the other content I have labeled for adding. 
+Update(GameTime) - Updates both the game engine and Main if you use it. 
+Draw(GameTime) - Begins SpriteBatch with PointClamt, draws the engine, and then ends the batch. 
+
+Methods
+SetWindowSize(width, height) - Chnages the window size. Only call it once the game is running. The default window is 800 x 480. 
+
+--Sprites--
+An enum list some examples of formatting are povided but you can just do whatever ig bro. 
+
+
+
+COMMON SHIT THAT WENT WRONG WHEN TESTING------
+Be sure you do not make these mistakes
+- Object does not appear becuase you didnt call PlayLoop or PlayOnce, or never added it to a scene. 
+- Crash when starting if a sprites entry has no matching asset, or the spelling and capitalization differ. 
+- Animation never moves becuase you overrode Update and forgot base.Update(gameTime)
+- Scene shows nothing or stops updating because in the scene subclass when you overrode it you forgot base.Update or base.Draw
+- Draw order is in order of Add. Will fix this in the future with layer functionality and whatnot but right now you have to add the background first and then the player later if you 
+  want the background behind the player. 
+- Timers read backwards ts just copied over from previous project. !timer.GameTimer means times up. 
+- Destroying an object means scene.Remove(obj) and also removing it from any of your own lists. 
+
+
+I exepect to find more bugs as I work but if you read this far I really appreciate it. If you run into any errors let me know and I will try my best to fix in the future
+until our class stops using MonoGame and moves on to an acutal engine. Idk man check out my art or something I spent way to long on this and not enough time drawing fahhhhhhhh. 
+
 
 
 

@@ -37,7 +37,7 @@ namespace GameFramework.Content.Engine
         }
 
         // Shared setup for both play methods.
-        public void Play(string animationName, bool loop, bool restart)
+        private void Play(string animationName, bool loop, bool restart)
         {
             if (currentAnimation == animationName && looping == loop && !restart)
             {
@@ -83,8 +83,6 @@ namespace GameFramework.Content.Engine
                     IsFinished = true;
                 }
             }
-
-
 
 
             // Texture2D for the current frame

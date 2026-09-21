@@ -4,7 +4,7 @@ namespace GameFramework.Content.Engine
 {
     public class Timer
     {
-        // Wait time in milliseconds for the timer.
+        // Wait time in seconds for the timer.
         protected double wait = 0;
 
         // Tracks whether a countdown is in progress.
