@@ -319,3 +319,4 @@ until our class stops using MonoGame and moves on to an acutal engine. Idk man c
 
 TODO
 Changes were made with tags and the to scene.cs 
+add examples with the current project and how much easier it is. 
