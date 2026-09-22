@@ -75,7 +75,38 @@ Note that in the initalize, the engine, _engine, is set towards the "defaultScen
 There is no current transfer method built in my me, but since scene is just a List<GameObject>, you can remove an object from one scene and add it to another. 
 An object is invisiable until you have called PlayLoop or PlayOnce and one Update has run. Until then it has no texture, so nothing is drawn and it cannot collide. 
 
+An example of a implementation of all the new objects into the engine may look like this:
 
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            assetManager = new AssetManager(Content);
+
+            Scene defaultScene = new Scene();
+            _engine = new Engine(defaultScene);
+
+            AssetManager.Instance.LoadAnimation("PlayerIdle", Sprites.PlayerIdle0);
+            AssetManager.Instance.LoadAnimation("PlayerWalk", Sprites.PlayerWalk0, Sprites.PlayerWalk1);
+            AssetManager.Instance.LoadAnimation("Ground", Sprites.Ground);
+            AssetManager.Instance.LoadAnimation("Raindrop", Sprites.Raindrop);
+            AssetManager.Instance.LoadAnimation("Door", Sprites.Door);
+            AssetManager.Instance.LoadAnimation("RaccoonWalk", Sprites.RaccoonWalk0, Sprites.RaccoonWalk1);
+
+            SpriteFont scoreFont = Content.Load<SpriteFont>("ScoreFont");
+
+            GameObject ground = new Ground();
+            GameObject player = new Player();
+            GameObject door = new Door();
+            GameObject raccoon = new Raccoon();
+            GameObject raindropManager = new RaindropManager();
+            _engine.CurrentScene.Add(door);
+            _engine.CurrentScene.Add(ground);
+            _engine.CurrentScene.Add(player);
+            _engine.CurrentScene.Add(raindropManager);
+            _engine.CurrentScene.Add(raccoon);
+            _engine.CurrentScene.Add(new ScoreDisplay(scoreFont));
+
+        }
 
 CLASS REFERENCES------
 Here I want to go into the different classes and what they do. Again, they should not be edited but it is useful information to understanding what you can call or not.
@@ -104,9 +135,10 @@ Scene.Find(tag) - First object with that tag, or null. Cast the result: (Player)
 Scene.FindAll(tag) - New list of every object with that tag. Safe to remove from while looping.
 Update(GameTime) - Virtual. Updates every object within the scene. 
 Draw(SpriteBatch) - Virtual. Draws every object. 
+FindAll(string tag) - Finds all objects with a matching tage and returns them. Useful for things like collisions, as access is needed to other GameObjects that is not readily avaliable, because
+of how they were set up in Game1. 
 
-
-A specific not about both Update(GameTime) and Draw(SpriteBatch) being virutal. This makes it overrideable if you want scenes such as custom scenes like menu, lobby, whatever. 
+A specific note about both Update(GameTime) and Draw(SpriteBatch) being virutal. This makes it overrideable if you want scenes such as custom scenes like menu, lobby, whatever. 
 To do this you have to make Scene the parrent of your custom scene. For example:
 
 Scene menu = new MenuScene();
@@ -140,6 +172,16 @@ base.Update(gameTime) otherwise the animation never advances and the object stay
             base.Update(gameTime);        
         }
     }
+
+Typical setups for contructors in GameObjects may look like this.
+ex.
+        public Player()
+        {
+            Tag = "Player";
+            Transform.Position = new Vector2(60, 416);
+            startPosition = new Vector2(60, 416);
+            Animation.PlayLoop("PlayerIdle");
+        }
 
 Methods
 Intersects(GaemObject other) - This method is a easy way to return true if the objects hitbox overlaps another object's hitbox. That way you wont need Collider.IsColliding, which 
@@ -236,18 +278,29 @@ ex.
 Most of the time you will only call LoadAnimation. All the other methods are used internally.
 
 --Collider--
-Basically just a rectangel around the sripte. If the rectangle overlaps with another, that means a collicion has taken place and the two objects are touching. 
+Basically just a rectangel around the sprite. If the rectangle overlaps with another, that means a collicion has taken place and the two objects are touching. 
 sizeMultiplier - Default is 80% of the normal sprite size. this controls how big the hitbox is compared to the sprite. 
 
 Methods
 GetBounds(Transform, SpriteRender) - This returns the hitbox Rectangle. It is centered on the position of GameObject and is scaled up to match. 
 isColliding(transform, renderer, other, otherTransform, otherRenderer) - Returns true if the two hitboxes overlap. GameObject has a more simplified method for this. 
+
+A list is needed to provide access to other objects before running collision code. This is made possible the Find method listed earlier in scene. 
 ex.
-    // With the Intersects shortcut from section 4.3:
-    if (player.Intersects(door))
+    // With the Intersects shortcut from earlier. 
+
+    Player player = (Player)Scene.Find("Player");
+    if (player != null && Intersects(player))
     {
-        score++;
-    }
+        GameState.Score++;
+        player.ResetToStart();
+
+        Raccoon raccoon = (Raccoon)Scene.Find("Raccoon");
+        if (raccoon != null)
+        {
+            raccoon.ResetToStart();
+        }
+     }   
 
     // Make a forgiving raindrop hitbox (half size)
     drop.Collider.sizeMultiplier = 0.5f;
@@ -313,10 +366,3 @@ Be sure you do not make these mistakes
 
 I exepect to find more bugs as I work but if you read this far I really appreciate it. If you run into any errors let me know and I will try my best to fix in the future
 until our class stops using MonoGame and moves on to an acutal engine. Idk man check out my art or something I spent way to long on this and not enough time drawing fahhhhhhhh. 
-
-
-
-
-TODO
-Changes were made with tags and the to scene.cs 
-add examples with the current project and how much easier it is. 

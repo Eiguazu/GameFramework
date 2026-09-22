@@ -11,6 +11,12 @@ namespace GameFramework.Content.Engine
         // Control for sprite rendering.
         public SpriteRenderer SpriteRenderer { get; } = new SpriteRenderer();
 
+        // A label used to find this object. Objects can share a tag (all raindrops are "Raindrop").
+        public string Tag { get; set; } = "";
+
+        // The scene this object is in, or null if it isn't in one. Set by Scene.Add and Scene.Remove.
+        public Scene Scene { get; set; }
+
         // Collider uses GameObject's transform and scale to scale box properly to texture. 
         public Collider Collider { get; } = new Collider();
 
