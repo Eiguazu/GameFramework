@@ -74,5 +74,11 @@ namespace GameFramework.Content.Engine
             Sprites sprite = animations[animationName][frame];
             return textures[sprite];
         }
+
+        // Gets loaded font by name.
+        public SpriteFont GetFont(string name)
+        {
+            return content.Load<SpriteFont>(name);
+        }
     }
 }

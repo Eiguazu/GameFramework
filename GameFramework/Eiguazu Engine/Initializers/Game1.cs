@@ -18,7 +18,7 @@ namespace GameFramework
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = true; 
 
             main = new Main();
         }
@@ -32,6 +32,7 @@ namespace GameFramework
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             assetManager = new AssetManager(Content);
+            Vector2 screenCenter = new Vector2(_graphics.PreferredBackBufferWidth / 2f, _graphics.PreferredBackBufferHeight / 2f);
 
             Scene defaultScene = new Scene();
             _engine = new Engine(defaultScene);
@@ -57,6 +58,7 @@ namespace GameFramework
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            Input.Update();
             _engine.Update(gameTime);
             main.Update(gameTime);
 

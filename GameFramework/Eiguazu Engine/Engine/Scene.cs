@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace GameFramework.Content.Engine
 {
@@ -10,6 +11,7 @@ namespace GameFramework.Content.Engine
         // List of all gameobjects in a scene, once objects have been assigned to the list you cannot make those objects point 
         // to a different list. 
         private readonly List<GameObject> Objects = new List<GameObject>();
+        public static Vector2 ScreenCenter;
 
         // Adds a object to the scene.
         public void Add(GameObject gameObject)
@@ -23,7 +25,7 @@ namespace GameFramework.Content.Engine
         public void Remove(GameObject gameObject)
         {
             Objects.Remove(gameObject);
-            gameObject.Scene = this;
+            gameObject.Scene = null;
         }
 
         // Updates gametime for all objects in a scene. ToArray mkakes so the forech deos not throw a invalid operation exception. 
@@ -35,10 +37,13 @@ namespace GameFramework.Content.Engine
             }
         }
 
-        // Draws all objects in a scene. ToArray mkakes so the forech deos not throw a invalid operation exception. 
+        // Draws all objects in a scene. ToArray mkakes so the forech deos not throw a invalid operation exception. Also sorts it now by layer.
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            foreach (GameObject gameObject in Objects.ToArray())
+            GameObject[] snapshot = Objects.ToArray();
+            Array.Sort(snapshot, CompareByLayer);
+
+            foreach (GameObject gameObject in snapshot)
             {
                 gameObject.Draw(spriteBatch);
             }
@@ -73,5 +78,24 @@ namespace GameFramework.Content.Engine
             return matches;
         }
 
+        // Adds a full-screen background image. Call in scene construction when inheriting. Set position to null to center the background.
+        public void SetBackground(string animationName)
+        {
+            SetBackground(animationName, ScreenCenter);
+        }
+
+        // Adds a full-screen background image. Call in scene construction when inheriting.
+        public void SetBackground(string animationName, Vector2 position)
+        {
+            Background background = new Background(animationName, position);
+            Objects.Insert(0, background);
+            background.Scene = this;
+        }
+
+        // Allows arroay to sort two gameobjects by layer with the lowest going first. 
+        private static int CompareByLayer(GameObject a, GameObject b)
+        {
+            return a.Layer.CompareTo(b.Layer);
+        }
     }
 }
