@@ -106,7 +106,36 @@ An example of a implementation of all the new objects into the engine may look l
             _engine.CurrentScene.Add(raccoon);
             _engine.CurrentScene.Add(new ScoreDisplay(scoreFont));
 
+            //GameObject.ShowHitboxes = true or false;
+
         }
+
+When handling your own scen subclasses, you would instead have to initalize all of the gameobjects in custom scene class. It might look more like this:
+
+    public class Night1 : Scene
+    {
+        public Night1()
+        {
+            Add(new BackgroundManager("LawnNight"));
+            Add(new ZombieManager(1));
+            Add(new Hammer());
+        }
+    }
+
+And then game1 would look more like this: 
+
+    protected override void LoadContent()
+    {
+        _spriteBatch = new SpriteBatch(GraphicsDevice);
+        assetManager = new AssetManager(Content);
+           
+        AssetManager.Instance.LoadAnimation("Menu", Sprites.Menu);
+        AssetManager.Instance.LoadAnimation("LawnDay", Sprites.Day);
+        AssetManager.Instance.LoadAnimation("LawnNight", Sprites.Night);
+        AssetManager.Instance.LoadAnimation("Mallet", Sprites.Mallet);
+
+        //GameObject.ShowHitboxes = true or false;
+    }
 
 CLASS REFERENCES------
 Here I want to go into the different classes and what they do. Again, they should not be edited but it is useful information to understanding what you can call or not.
@@ -147,6 +176,12 @@ This is possible becuase a child class can be treated as its parent. You could t
 inside of your overwritten Update and Draw functions, or the objects will stop updating and drawing. 
 Other things worth knowing are that adding and removing during Update is safe. The scene loops over a copy of its list. The list of objects in each scene is private. You should 
 keep your own references for anything you need to look at. 
+
+To change a scene, you must call 
+Scene.NextScene = "Desired scene";
+Because at every frame game1 checks if next is empty. If there is a name in next, it will look call build scene and construct a new scene that 
+matches the name. This is done so that you can change scenes from anywhere, and not have to worry about passing around the engine reference. This 
+is also temperaroy and a better solution will be worked out later. 
 
 --GameObject--
 This is the most similar thing I could get to makign a object in GameMaker or Unity. It is the thing you make everything from, and it comes with a Transform, SpriteRender, Collider, and 
@@ -288,7 +323,9 @@ sizeMultiplier - Default is 80% of the normal sprite size. this controls how big
 
 Methods
 GetBounds(Transform, SpriteRender) - This returns the hitbox Rectangle. It is centered on the position of GameObject and is scaled up to match. 
-isColliding(transform, renderer, other, otherTransform, otherRenderer) - Returns true if the two hitboxes overlap. GameObject has a more simplified method for this. 
+isColliding(transform, renderer, other, otherTransform, otherRenderer) - Returns true if the two hitboxes overlap. GameObject has a more simplified method for this.
+BuildNewScene(string name) - hard coded to create a new scene based on the name. This scene is new and is not persistant. To be replaced and improved on in the 
+future. 
 
 A list is needed to provide access to other objects before running collision code. This is made possible the Find method listed earlier in scene. 
 ex.
@@ -415,5 +452,6 @@ I exepect to find more bugs as I work but if you read this far I really apprecia
 until our class stops using MonoGame and moves on to an acutal engine. Idk man check out my art or something I spent way to long on this and not enough time drawing fahhhhhhhh. 
 
 TODO
+line 182 of documentationm persistant scene changes 
 tuple
 interfaces

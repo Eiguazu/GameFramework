@@ -34,9 +34,6 @@ namespace GameFramework
             assetManager = new AssetManager(Content);
             Vector2 screenCenter = new Vector2(_graphics.PreferredBackBufferWidth / 2f, _graphics.PreferredBackBufferHeight / 2f);
 
-            Scene defaultScene = new Scene();
-            _engine = new Engine(defaultScene);
-
             // ____________________________
             // Scene loading goes here
             // Default scene provided above
@@ -51,6 +48,8 @@ namespace GameFramework
             // ____________________________
             // GameObject loading goes here
             // ----------------------------
+
+            _engine = new Engine(BuildNewScene("Default"));
         }
 
         protected override void Update(GameTime gameTime)
@@ -61,6 +60,12 @@ namespace GameFramework
             Input.Update();
             _engine.Update(gameTime);
             main.Update(gameTime);
+
+            string next = _engine.CurrentScene.NextScene;
+            if (next != "")
+            {
+                _engine.ChangeScene(BuildNewScene(next));
+            }
 
             base.Update(gameTime);
         }
@@ -78,6 +83,28 @@ namespace GameFramework
 
             base.Draw(gameTime);
         }
+
+        private Scene BuildNewScene(string name)
+        {
+            Scene scene = new DefaultScene();
+
+            if (name == "___")
+            {
+                //scene = new ___();
+            }
+            else if (name == "___")
+            {
+                //scene = new ___();
+            }
+            else
+            {
+                //scene = new ___();
+            }
+
+            return scene;
+        }
+
+
 
         public void SetWindowSize(int width, int height)
         {

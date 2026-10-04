@@ -11,6 +11,11 @@ namespace GameFramework.Content.Engine
         // List of all gameobjects in a scene, once objects have been assigned to the list you cannot make those objects point 
         // to a different list. 
         private readonly List<GameObject> Objects = new List<GameObject>();
+
+        // Stores the name of the next scene to load, if empty it will not change scenes.
+        public string NextScene = "";
+
+        // Stores the center of the screen, used for centering objects.
         public static Vector2 ScreenCenter;
 
         // Adds a object to the scene.
