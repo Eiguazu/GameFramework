@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 
 namespace GameFramework.Content.Engine
 {
@@ -32,12 +35,22 @@ namespace GameFramework.Content.Engine
         // Sets the layer of the object, lower layers are drawn first.
         public int Layer { get; set; } = 1;
 
+        //
+        public bool Persistent { get; set; } = false;
+
+        //
+        public bool Solid { get; set; } = false;
+
+        //
+        private float deltaTime = 0;
+        //
         private static Texture2D pixel;
 
         // Monogame calls Game1.Updtae as part of its loop, my framework will eventually pass that update down. 
         public virtual void Update(GameTime gameTime)
         {
             SpriteRenderer.Texture = Animation.Update(gameTime);
+            deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
         // Monogame calls Game1.Draw as part of its loop, my framework will eventually pass that draw down. 
@@ -67,6 +80,26 @@ namespace GameFramework.Content.Engine
             return Collider.IsColliding(Transform, SpriteRenderer, other.Collider, other.Transform, other.SpriteRenderer);
         }
 
+        // 
+        public bool validMove(Vector2 delta)
+        {
+            Vector2 previous = Transform.Position;
+            Transform.Position += delta;
 
+            List<GameObject> solids = Scene.GetSolidObjects();
+            for (int i = 0; i < solids.Count; i++)
+            {
+                if (solids[i] != this && Intersects(solids[i]))
+                {
+                    Transform.Position = previous;
+                    return false; 
+                }
+
+            }
+
+            return true; 
+
+        }
     }
 }
+

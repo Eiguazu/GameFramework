@@ -452,6 +452,30 @@ I exepect to find more bugs as I work but if you read this far I really apprecia
 until our class stops using MonoGame and moves on to an acutal engine. Idk man check out my art or something I spent way to long on this and not enough time drawing fahhhhhhhh. 
 
 TODO
-line 182 of documentationm persistant scene changes 
 tuple
-interfaces
+interfacessf
+start using switch cases
+line 182 of documentationm persistant scene changes make it so that persistant objects that retain information from scene to scene are easier to add along, bool to turn on and off. 
+add solid entities, basically true false function for things to have collision and not be able to pass eachother (boolean).
+Add a built in tilemap with interchangable textures. For example it should be easy to add a new texture into the tilemap with a new symbol definition from 
+a txt file. 
+add a working dialouge system for objects. this isnt functional, just start making some kind of libraby that is easy to hook up, for example if a dialouge box object
+is added to the scene, it should be able to pull from that already built in libraby. a dialouge box objject would have to be added to each scene for it to work, with an override or somthing
+gfor the specific scene dialouge. should be easy to edit and be kind of modular in that way, idk a better way to do it. 
+add sound functionality and a play sound method that can be used by all gameobjects. 
+
+
+
+    public class Level1 : Scene
+    {
+        public Level1()
+        {
+            Tilemap tilemap = new Tilemap("level1.txt", 40);
+
+            tilemap.RegisterFactory(
+                "Wall",
+                (position, parameter) => new Wall(position, parameter == "true"));
+
+            tilemap.Load(this);
+        }
+    }

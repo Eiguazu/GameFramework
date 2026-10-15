@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace GameFramework.Content.Engine
 {
@@ -14,10 +15,22 @@ namespace GameFramework.Content.Engine
             this.CurrentScene = startingScene;
         }
 
-        // Allows you to switch scenes. 
+        // 
         public void ChangeScene(Scene newScene)
         {
-            this.CurrentScene = newScene;
+            if (CurrentScene != null)
+            {
+                List<GameObject> persistentObjects = CurrentScene.GetPersistentObjects();
+                for (int i = 0; i < persistentObjects.Count; i++)
+                {
+                    GameObject obj = persistentObjects[i];
+                    CurrentScene.Remove(obj);
+                    newScene.Add(obj); 
+                }
+            }
+
+            CurrentScene = newScene; 
+
         }
 
         // If the current scene exits, it its updated. Update is passed down the hierarchy. 

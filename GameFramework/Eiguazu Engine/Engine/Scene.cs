@@ -102,5 +102,35 @@ namespace GameFramework.Content.Engine
         {
             return a.Layer.CompareTo(b.Layer);
         }
+
+        //
+        public List<GameObject> GetPersistentObjects()
+        {
+            List<GameObject> persistent = new List<GameObject>();
+            for (int i = 0; i < Objects.Count; i++)
+            {
+                if (Objects[i].Persistent)
+                {
+                    persistent.Add(Objects[i]);
+                }
+            }
+
+            return persistent; 
+        }
+
+        //
+        public List<GameObject> GetSolidObjects()
+        {
+            List<GameObject> solids = new List<GameObject>();
+            for (int i = 0; i < Objects.Count; i++)
+            {
+                if (Objects[i].Solid)
+                {
+                    solids.Add(Objects[i]);
+                }
+            }
+
+            return solids; 
+        }
     }
 }

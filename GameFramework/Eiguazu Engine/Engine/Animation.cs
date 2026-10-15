@@ -88,5 +88,12 @@ namespace GameFramework.Content.Engine
             // Texture2D for the current frame
             return AssetManager.Instance.GetAnimationFrame(currentAnimation, currentFrame);
         }
+
+        // Current frame index of the playing animation.
+        public int CurrentFrame
+        {
+            get { return currentFrame; }
+        }
     }
+
 }

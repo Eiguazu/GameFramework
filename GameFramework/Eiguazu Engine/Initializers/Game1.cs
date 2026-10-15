@@ -13,7 +13,6 @@ namespace GameFramework
         private SpriteBatch _spriteBatch;
         private Main main;
 
-
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -33,6 +32,9 @@ namespace GameFramework
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             assetManager = new AssetManager(Content);
             Vector2 screenCenter = new Vector2(_graphics.PreferredBackBufferWidth / 2f, _graphics.PreferredBackBufferHeight / 2f);
+            Scene.ScreenCenter = screenCenter;
+
+            SetWindowSize(1280, 720);
 
             // ____________________________
             // Scene loading goes here
