@@ -1,4 +1,5 @@
 ﻿using GameFramework.Content.Game;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -79,6 +80,12 @@ namespace GameFramework.Content.Engine
         public SpriteFont GetFont(string name)
         {
             return content.Load<SpriteFont>(name);
+        }
+
+        // Loads the sound by name. 
+        public SoundEffect GetSound(string name)
+        {
+            return content.Load<SoundEffect>(name);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -35,16 +36,21 @@ namespace GameFramework.Content.Engine
         // Sets the layer of the object, lower layers are drawn first.
         public int Layer { get; set; } = 1;
 
-        //
+        // Boolean to determine whether the object changes across scenes, mainly used for things like player. 
         public bool Persistent { get; set; } = false;
 
-        //
+        // Solid object. Solid objects have to collide and cannot pass through other solid objectsl. 
         public bool Solid { get; set; } = false;
 
-        //
+        // Reference to deltaTime built into gameobject for ease of use.
         private float deltaTime = 0;
-        //
+
+        // Transparent pixel to draw for the hitbox and debugging. 
         private static Texture2D pixel;
+
+        // Toggle for collider on and off. 
+        public bool CollisionEnabled = true;
+
 
         // Monogame calls Game1.Updtae as part of its loop, my framework will eventually pass that update down. 
         public virtual void Update(GameTime gameTime)
@@ -77,10 +83,14 @@ namespace GameFramework.Content.Engine
         // Returns true if this object's hitbox overlaps the other object's hitbox.
         public bool Intersects(GameObject other)
         {
+            if (!CollisionEnabled || !other.CollisionEnabled)
+            {
+                return false; 
+            }
             return Collider.IsColliding(Transform, SpriteRenderer, other.Collider, other.Transform, other.SpriteRenderer);
         }
 
-        // 
+        // Checks whether the next movment is valid when the obhect is a solid object. This is used for wall collisions. 
         public bool validMove(Vector2 delta)
         {
             Vector2 previous = Transform.Position;
@@ -100,6 +110,27 @@ namespace GameFramework.Content.Engine
             return true; 
 
         }
+
+        // Plays a sound with instance.
+        public void PlaySound(string name, float volume = 1f, float pitch = 0f, float pan = 0f, bool repeat = false)
+        {
+            SoundEffect sound = AssetManager.Instance.GetSound(name);
+
+            SoundEffectInstance instance = sound.CreateInstance();
+            instance.Volume = volume;
+            instance.Pitch = pitch;
+            instance.Pan = pan;
+            instance.IsLooped = repeat;
+
+            instance.Play();
+        }
+
+        // Toggles collision on and off. 
+        public void ToggleCollision()
+        {
+            CollisionEnabled = !CollisionEnabled;
+        }
+
     }
 }
 

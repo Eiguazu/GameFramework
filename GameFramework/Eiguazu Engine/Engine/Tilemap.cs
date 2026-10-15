@@ -22,9 +22,6 @@ namespace GameFramework.Content.Engine
         private string fileName;
 
         //
-        private string exitTarget;
-
-        //
         private Dictionary<char, string[]> legend = new Dictionary<char, string[]>();
         //
         private Dictionary<string, Func<Vector2, string, GameObject>> factories = new Dictionary<string, Func<Vector2, string, GameObject>>();
@@ -107,10 +104,8 @@ namespace GameFramework.Content.Engine
 
                     GameObject obj = factories[type](position, parameter);
 
-                    if (obj != null)
-                    {
-                        scene.Add(obj);
-                    }
+
+                    scene.Add(obj);
                 }
             }
         }

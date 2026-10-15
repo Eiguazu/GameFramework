@@ -153,6 +153,11 @@ ex.
     _engine.ChangeScene(door); 
 
 There will always be one engine that exists at a time, so all engines are refered to as _engine. 
+ChangeScene now also handles Persistent objects automatically: any object with Persistent == true in the current scene is moved.
+
+The new scene's constructor runs BEFORE the persistent object is transferred in. If a new scene's constructor tries Scene.Find("Player") 
+expecting the persistent player to already be there, it won't find it yet - the transfer happens right after construction finishes. 
+Look for the player in Update instead of the constructor if you need it that early.
 
 --Scene--
 A container for GameObjects. It updates and draws everything inside of it.
@@ -166,6 +171,9 @@ Update(GameTime) - Virtual. Updates every object within the scene.
 Draw(SpriteBatch) - Virtual. Draws every object. Updated so now it sorts the draw order by layer. Lower numbers are drawn first, so they appear behind higher numbers. Default is 0.
 FindAll(string tag) - Finds all objects with a matching tage and returns them. Useful for things like collisions, as access is needed to other GameObjects that is not readily avaliable, because
 of how they were set up in Game1. 
+GetPersistentObjects() - Returns every object in this scene with Persistent == true. Used internally by Engine.ChangeScene you shouldn't 
+normally need to call this yourself.
+GetSolidObjects() - Returns every object in this scene with Solid == true. Used internally by GameObject.validMove.
 
 A specific note about both Update(GameTime) and Draw(SpriteBatch) being virutal. This makes it overrideable if you want scenes such as custom scenes like menu, lobby, whatever. 
 To do this you have to make Scene the parrent of your custom scene. For example:
@@ -199,6 +207,15 @@ GameObject.Tag - A text label used to find objects. Objects can share a tag.
 GameObject.Scene - The scene this object is in (null if none). Set automatically by Scene.Add / Remove.
 GameObject.DebugDraw - Can be turned to true to debug. Draws a red rectangle around the hitbox.
 GameObject.Layer - The order in which the object is drawn. Lower numbers are drawn first, so they appear behind higher numbers. Default is 0.
+Persistent - Bool. If true, this exact object is carried forward into the next scene instead of being left behind when the scene changes. 
+Set on Engine.ChangeScene. 
+Solid - Bool. If true, other objects calling validMove(delta) cannot move into this object's hitbox. Use for walls, not for things that 
+should just be detected/overlapped (use a plain Intersects check instead).
+CollisionEnabled - Bool, default true. Intersects() returns false if either object involved has this set to false, letting you turn 
+collision off for an object at runtime (e.g. invincibility frames, ghost mode).
+deltaTime - preset delta time for easier use within objects. 
+
+
 
 Just like the scenes, specific gameobjects such as player inherit from GameObject. They would be added to the scene and would need to overide the Update and Draw methods. Always call 
 base.Update(gameTime) otherwise the animation never advances and the object stays invisible. Same goes for base.Draw(spriteBatch). An example would be:
@@ -223,9 +240,26 @@ ex.
             Animation.PlayLoop("PlayerIdle");
         }
 
+New addition examples. 
+ex.
+        wall.Solid = true;
+
+        float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        validMove(new Vector2(moveX * speed * dt, 0));
+        validMove(new Vector2(0, moveY * speed * dt));
+
+        PlaySound("Hit");
+
 Methods
 Intersects(GaemObject other) - This method is a easy way to return true if the objects hitbox overlaps another object's hitbox. That way you wont need Collider.IsColliding, which 
 takes five parameters. 
+validMove(Vector2 delta) - Moves this object by delta, but checks it against every Solid object in the scene first. If the move would 
+overlap a Solid object, the position is reverted and this returns false. Call this instead of directly modifying Transform.Position for 
+anything that should respect walls. Call it once per axis (X, then Y) if you want sliding-along-walls behavior rather than getting stuck.
+PlaySound(string name, float volume = 1f, float pitch = 0f, float pan = 0f, bool repeat = false) - Plays a sound effect once (or looped, 
+if repeat is true). name must match a SoundEffect asset added in the MGCB editor the same way textures are (file name = asset name).
+
+ToggleCollision() - Flips CollisionEnabled on/off.
 
 --Transform--
 This class only stores numbers. It tells others where the object is and hwo it looks geometriacally. 
@@ -271,6 +305,7 @@ Methods
 PlayLoop(name) - Plays the animation over and over.
 PlayOnce(name) - Plays once and then holds the last frame.
 Play(name, loop, restart) - The shared mehtod behind both PlayLoop(name) and PlayOnce(name).
+CurrentFrame - Returns the index of the currently playing frame (an int). Read-only.
 
 Calling things like PlayLoop("Walk") every frame is safe. If "Walk is already looping, -nothing ever happens- so it doesn't restart. Playing a differetn name replaces the current animation
 and starts at frame zero. There is no queue. Calling things like PlayOnce("Attack') is also safe, but it woun't replay once finished. To replay, you have to use Play("Attack", false, true). 
@@ -421,6 +456,61 @@ ex.
     score++;
     scoreLabel.SetText("Score: " + score);
 
+--Tile / Tilemap--
+A built-in way to spawn a grid of objects form a text file, without writing a new parsing loop for every level. Tile is a playing textured object, 
+which is meant to be inhernented from and swaped for textures, as it scales the texture to the correct size. Tilemap reads a legend file (symbol ->
+object type) and a map file (the actualy grid and spawns the right objec for each symbol using a factor function you register per scene. 
+
+-Tile- 
+Constructor
+Tile(string animationName, Vector2 position, bool solid, int tileSize) creates one plain tile. 
+
+-Tilemap-
+Methods
+RegisterFactory(string type, Func<Vector2, string, GameObject> factory) - registers what to spawn for a given type name. The factory recieves the 
+tiles's pixel position and a optional prameter string from the legend file, and returns the object to spawn. 
+Load(Scene scene) - Reads legend.txt and the map file, and spawns every recongized symbol into scene. Must be called after registerFactor for every 
+type your legend file actually uses, or those symbols are skipped. 
+
+Legend file format (legend.txt, one line per symbol)
+symbol, type, optional parameter
+ex. 
+    #,Wall,true
+    .,Tile,FloorTexture
+    P,Player,
+
+ex. 
+    public class Level1 : Scene
+    {
+        public Level1()
+        {
+            Tilemap tilemap = new Tilemap("level1.txt");
+
+            // #,WallTile,true
+            tilemap.RegisterFactory("WallTile",(position, parameter) => new Tile("Wall", position, bool.Parse(parameter)));
+
+            // Example: W,Wall,
+            tilemap.RegisterFactory("Wall", (position, parameter) => new Wall(position));
+
+            tilemap.Load(this);
+        }
+}
+
+--DialougeLibrary--
+A static key-value store for dialogue lines, reachable from anywhere. Register lines per scene (acting as your "override" per scene just call 
+SetLine again with a new id, or reuse an id to overwrite it), and anything can look a line up by id.
+
+Methods
+SetLine(string id, string text) - Registers (or overwrites) a line under this id.
+GetLine(string id) - Returns the line stored under this id, or "..." if nothing was set.
+
+ex.
+    // In a scene's constructor:
+    DialogueLibrary.SetLine("rabbit", "I am rabbit.");
+
+    // From any object:
+    string line = DialogueLibrary.GetLine("rabbit");
+
 --Game1--
 MonoGame's entry point instead of main for some reason. This connects MonoGame to my framework. 
 Game1() - Sets up stuff idk.  
@@ -451,31 +541,12 @@ Be sure you do not make these mistakes
 I exepect to find more bugs as I work but if you read this far I really appreciate it. If you run into any errors let me know and I will try my best to fix in the future
 until our class stops using MonoGame and moves on to an acutal engine. Idk man check out my art or something I spent way to long on this and not enough time drawing fahhhhhhhh. 
 
+
 TODO
 tuple
 interfacessf
 start using switch cases
 line 182 of documentationm persistant scene changes make it so that persistant objects that retain information from scene to scene are easier to add along, bool to turn on and off. 
-add solid entities, basically true false function for things to have collision and not be able to pass eachother (boolean).
-Add a built in tilemap with interchangable textures. For example it should be easy to add a new texture into the tilemap with a new symbol definition from 
-a txt file. 
-add a working dialouge system for objects. this isnt functional, just start making some kind of libraby that is easy to hook up, for example if a dialouge box object
-is added to the scene, it should be able to pull from that already built in libraby. a dialouge box objject would have to be added to each scene for it to work, with an override or somthing
-gfor the specific scene dialouge. should be easy to edit and be kind of modular in that way, idk a better way to do it. 
-add sound functionality and a play sound method that can be used by all gameobjects. 
 
 
-
-    public class Level1 : Scene
-    {
-        public Level1()
-        {
-            Tilemap tilemap = new Tilemap("level1.txt", 40);
-
-            tilemap.RegisterFactory(
-                "Wall",
-                (position, parameter) => new Wall(position, parameter == "true"));
-
-            tilemap.Load(this);
-        }
-    }
+theoretically cant you swithc out scenes instead of creating new instances of each to keep persistant objects. 
