@@ -17,7 +17,7 @@ namespace GameFramework.Content.Engine
         private bool scaled = false; 
 
         // Shows Tile and declares it as a solid object. 
-        public Tile(string animationName, Vector2 position, bool solid)
+        public Tile(string animationName, Vector2 position, bool solid, int tileSize)
         {
             Tag = "Tile";
             Transform.Position = position;
