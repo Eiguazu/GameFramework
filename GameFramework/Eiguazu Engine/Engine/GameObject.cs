@@ -3,12 +3,17 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection.Metadata.Ecma335;
 
 namespace GameFramework.Content.Engine
 {
     public class GameObject
     {
+        // A list of components or "modules". Modules contain basic functionality from past projects that are pretty common, so 
+        // things like player movement etc just have to be attached as components. 
+        private List<Component> components = new();
+
         // Gives every GameObject its own Transform. 
         public Transform Transform { get; } = new Transform();
 
@@ -43,7 +48,7 @@ namespace GameFramework.Content.Engine
         public bool Solid { get; set; } = false;
 
         // Reference to deltaTime built into gameobject for ease of use.
-        private float deltaTime = 0;
+        public float deltaTime = 0;
 
         // Transparent pixel to draw for the hitbox and debugging. 
         private static Texture2D pixel;
@@ -57,6 +62,18 @@ namespace GameFramework.Content.Engine
         {
             SpriteRenderer.Texture = Animation.Update(gameTime);
             deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            foreach (Component component in components)
+            {
+                component.Update(gameTime);
+            }
+        }
+
+        // Adds a module as a component. 
+        public void AddComponent(Component component)
+        {
+            components.Add(component);
+            component.Attach(this);
         }
 
         // Monogame calls Game1.Draw as part of its loop, my framework will eventually pass that draw down. 

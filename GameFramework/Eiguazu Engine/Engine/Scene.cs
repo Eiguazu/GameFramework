@@ -103,7 +103,7 @@ namespace GameFramework.Content.Engine
             return a.Layer.CompareTo(b.Layer);
         }
 
-        //
+        // Finds all persistant objects in a scene and returns them. 
         public List<GameObject> GetPersistentObjects()
         {
             List<GameObject> persistent = new List<GameObject>();
@@ -118,7 +118,7 @@ namespace GameFramework.Content.Engine
             return persistent; 
         }
 
-        //
+        // Finds all solid objects in a scene and returns them. 
         public List<GameObject> GetSolidObjects()
         {
             List<GameObject> solids = new List<GameObject>();

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace GameFramework
 {
@@ -12,6 +13,7 @@ namespace GameFramework
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Main main;
+        private Dictionary<string, Scene> sceneCache = new Dictionary<string, Scene>();
 
         public Game1()
         {
@@ -51,7 +53,7 @@ namespace GameFramework
             // GameObject loading goes here
             // ----------------------------
 
-            _engine = new Engine(BuildNewScene("Default"));
+            _engine = new Engine(BuildScene("Default"));
         }
 
         protected override void Update(GameTime gameTime)
@@ -66,12 +68,17 @@ namespace GameFramework
             string next = _engine.CurrentScene.NextScene;
             if (next != "")
             {
-                _engine.ChangeScene(BuildNewScene(next));
+                _engine.CurrentScene.NextScene = "";
+                _engine.ChangeScene(BuildScene(next));
             }
 
             base.Update(gameTime);
         }
 
+        public void ResetBuildScene(string name) 
+        {
+            sceneCache.Remove(name);   
+        }
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -86,9 +93,15 @@ namespace GameFramework
             base.Draw(gameTime);
         }
 
-        private Scene BuildNewScene(string name)
+        private Scene BuildScene(string name)
         {
             Scene scene = new DefaultScene();
+
+            if (sceneCache.ContainsKey(name))
+            {
+                return sceneCache[name];
+            }
+
 
             if (name == "___")
             {
@@ -100,11 +113,12 @@ namespace GameFramework
             }
             else
             {
-                //scene = new ___();
+                scene = new DefaultScene();
             }
-
+            sceneCache[name] = scene;
             return scene;
         }
+        
 
 
 

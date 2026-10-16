@@ -137,6 +137,8 @@ And then game1 would look more like this:
         //GameObject.ShowHitboxes = true or false;
     }
 
+    
+
 CLASS REFERENCES------
 Here I want to go into the different classes and what they do. Again, they should not be edited but it is useful information to understanding what you can call or not.
 
@@ -214,6 +216,8 @@ should just be detected/overlapped (use a plain Intersects check instead).
 CollisionEnabled - Bool, default true. Intersects() returns false if either object involved has this set to false, letting you turn 
 collision off for an object at runtime (e.g. invincibility frames, ghost mode).
 deltaTime - preset delta time for easier use within objects. 
+List<Component> components - List of components that are added to a gameObject. 
+AddComponent(Component component) - Adds a module as a component. 
 
 
 
@@ -520,10 +524,27 @@ Draw(GameTime) - Begins SpriteBatch with PointClamt, draws the engine, and then 
 
 Methods
 SetWindowSize(width, height) - Chnages the window size. Only call it once the game is running. The default window is 800 x 480. 
+BuildScene(string name) - Builds a new scene and adds it to the sceneCache. Only builds a new scene the first time a request for building is made. 
+ResetBuildScene(string name) - Resets a built scene and returns it to the original state. does not affect persistant objects. 
+
+Scenes are no longer rebuilt from scratch on every visit. Game1 keeps a Dictionary<string, Scene> (sceneCache) and BuildNewScene(name) 
+only constructs a scene the first time its name is requested; every visit after that returns the SAME Scene instance.
+
+IMPORTANT: because scenes now persist, Scene.NextScene is now reset to "" immediately after being read in Game1.Update, or a cached 
+scene will carry its old NextScene value into its next visit and immediately trigger another scene change the moment you return to it. Persistent
+objects (GameObject.Persistent) still work the same way on top of this. Theyre for an object that should travel with you into the current 
+scene (like the player), which is a different problem than a scene remembering its own leftover state.
 
 --Sprites--
 An enum list some examples of formatting are povided but you can just do whatever ig bro. 
 
+
+
+MODULAR COMPONENTS------
+I made this to make things like adding WASD even easier. Just add the module, such as the movemnt module to allow for WASD movement, or arrowkey
+movement for any object. Just going to list them and thier functions here when they are added. 
+
+--BasicMovementModule--
 
 
 COMMON SHIT THAT WENT WRONG WHEN TESTING------
@@ -546,7 +567,3 @@ TODO
 tuple
 interfacessf
 start using switch cases
-line 182 of documentationm persistant scene changes make it so that persistant objects that retain information from scene to scene are easier to add along, bool to turn on and off. 
-
-
-theoretically cant you swithc out scenes instead of creating new instances of each to keep persistant objects. 

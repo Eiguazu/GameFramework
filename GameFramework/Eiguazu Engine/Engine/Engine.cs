@@ -33,13 +33,13 @@ namespace GameFramework.Content.Engine
 
         }
 
-        // If the current scene exits, it its updated. Update is passed down the hierarchy. 
+        // If the current scene exits, it its updated. Update is passed down the hierarchy. ? for null.
         public void Update(GameTime gameTime)
         {
             CurrentScene?.Update(gameTime);
         }
 
-        // If the current scene exits, it is drawn. Draw is passed down the hierarchy. 
+        // If the current scene exits, it is drawn. Draw is passed down the hierarchy. ? for null. 
         public void Draw(SpriteBatch spriteBatch)
         {
             CurrentScene?.Draw(spriteBatch);
