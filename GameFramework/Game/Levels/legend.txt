@@ -1,3 +1,4 @@
 ﻿#,Wall,true
-p,player
-e,enemy
+.,Tile,Floor
+e,Enemy,
+p,Player,
