@@ -12,16 +12,16 @@ namespace GameFramework
         private Engine _engine;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Main main;
+        private DefaultGameObject DefaultGameObject;
         private Dictionary<string, Scene> sceneCache = new Dictionary<string, Scene>();
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true; 
+            IsMouseVisible = true;
 
-            main = new Main();
+            DefaultGameObject = new DefaultGameObject();
         }
 
         protected override void Initialize()
@@ -63,7 +63,7 @@ namespace GameFramework
 
             Input.Update();
             _engine.Update(gameTime);
-            main.Update(gameTime);
+            DefaultGameObject.Update(gameTime);
 
             string next = _engine.CurrentScene.NextScene;
             if (next != "")
@@ -102,7 +102,7 @@ namespace GameFramework
                 return sceneCache[name];
             }
 
-
+            // Add new scenes here, they need to be registered here. 
             if (name == "___")
             {
                 //scene = new ___();

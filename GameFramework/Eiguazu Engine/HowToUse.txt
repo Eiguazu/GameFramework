@@ -545,7 +545,28 @@ I made this to make things like adding WASD even easier. Just add the module, su
 movement for any object. Just going to list them and thier functions here when they are added. 
 
 --BasicMovementModule--
+speed - Can set inital speed 
+UseWASD - Toggle on and off to use WASD. 
+UseArrowKeys - Toggle on and off to use arrow keys. 
+UseAD - Toggle on and off to only use A and D. 
+ToggleMovement - Toggle on and off to turn off movement entirely. 
 
+Example of modular components being added
+ex. 
+      namespace GameFramework
+      {
+           public class Player : GameObject
+          {
+                public Player(Vector2 position)
+               {
+                   Transform.Position = position;
+                   Tag = "Player";
+
+                   // Add components
+                   AddComponent(new BasicMovementModule{Speed  = 150f, UseWASD = true});
+               }
+          }
+      }
 
 COMMON SHIT THAT WENT WRONG WHEN TESTING------
 Be sure you do not make these mistakes

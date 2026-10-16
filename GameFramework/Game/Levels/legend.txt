@@ -1,5 +1,3 @@
 ﻿#,Wall,true
-
-first thing is the symbol on the map, second is the name the factory must regocnize and the parameter after. 
-two different dictionalries. 
-factories are lowk only usefull when building a engine for somthign and modularity. 
+p,player
+e,enemy
