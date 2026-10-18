@@ -15,7 +15,7 @@ namespace GameFramework.Content.Engine
             this.CurrentScene = startingScene;
         }
 
-        // 
+        // Changes the scene to a new scene. Counts out the persistant objects, so they stay. 
         public void ChangeScene(Scene newScene)
         {
             if (CurrentScene != null)
@@ -40,9 +40,9 @@ namespace GameFramework.Content.Engine
         }
 
         // If the current scene exits, it is drawn. Draw is passed down the hierarchy. ? for null. 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, bool drawUI)
         {
-            CurrentScene?.Draw(spriteBatch);
+            CurrentScene?.Draw(spriteBatch, drawUI);
         }
     }
 }

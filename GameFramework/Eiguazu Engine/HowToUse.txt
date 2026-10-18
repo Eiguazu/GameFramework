@@ -136,7 +136,8 @@ And then game1 would look more like this:
 
         //GameObject.ShowHitboxes = true or false;
     }
-
+    
+Alternatively as of the newest engine update you can forgo even add with the tilemaps.
     
 
 CLASS REFERENCES------
@@ -218,7 +219,7 @@ collision off for an object at runtime (e.g. invincibility frames, ghost mode).
 deltaTime - preset delta time for easier use within objects. 
 List<Component> components - List of components that are added to a gameObject. 
 AddComponent(Component component) - Adds a module as a component. 
-
+IsUI - deternimenes if the gameobject is being used for UI or not. If it is, it is rendered seperately to other objects and not used in the camera. 
 
 
 Just like the scenes, specific gameobjects such as player inherit from GameObject. They would be added to the scene and would need to overide the Update and Draw methods. Always call 
@@ -500,6 +501,8 @@ ex.
         }
 }
 
+WHEN READING FROM A TXT FILE REMEMBER TO CHANGE THE FILE THING IN PROPERTIES TO COPY TO OUTPUT DIRECTORY TO COPY IF NEWER IN PROPERTIES DO IT OR IT DOESNT WORK. 
+
 --DialougeLibrary--
 A static key-value store for dialogue lines, reachable from anywhere. Register lines per scene (acting as your "override" per scene just call 
 SetLine again with a new id, or reuse an id to overwrite it), and anything can look a line up by id.
@@ -567,6 +570,49 @@ ex.
                }
           }
       }
+
+--CameraFollowModule--
+Nothing - if you implment this the cammera will follow the player. 
+
+ex. 
+    AddComponent(new CameraFollowModule());
+
+--DefaultScaleModule--
+TargetSize - defualt is 40f which is tilesize, quick and easy way to scale objects relaitive to size of everything else. 
+
+ex.
+    AddComponent(new ScaleModule { TargetSize = 40f });
+
+--FollowModule--
+TargetTag - Tag of the target object you would like one to follow. 
+Speed - Speed of chasing object. 
+
+ex.
+    AddComponent(new FollowModule { TargetTag = "Player", Speed = 80f });
+
+--InventoryModule--
+Adds a inventory to the attached object. There is no need to initalize inventory.  
+Add(string itemName) - adds the name of a item.
+Has(string itemName) - tells object if they have the item or not.
+Clear() - clears inventory. 
+
+ex. 
+    InventoryModule inventory = player.GetComponent<InventoryModule>();
+    Inventory.AddItem("BloodSample");
+
+     if (Inventory.Has("BloodSample") && Inventory.Has("MurderWeapon"))
+     {
+        textbox.Show("NPC1-4");
+     }
+
+--SceneTransitionModule--
+TargetScene - string of the target scene. 
+TriggerTag - string of the object that the thing module has to interact with or touch in order to trigger switch. 
+TargetPosition - sets position the object would take inside of the new scene. 
+
+ex.
+    AddComponent(new SceneTransitionModule{TargetScene = "House", TriggerTag = "Player", TargetPosition = new Vector2(100, 200)});
+
 
 COMMON SHIT THAT WENT WRONG WHEN TESTING------
 Be sure you do not make these mistakes

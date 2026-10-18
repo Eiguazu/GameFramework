@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GameFramework
 {
-    public abstract class Component
+    public class Component
     {
         public GameObject Owner { get; private set; }
         public void Attach(GameObject owner)

@@ -56,6 +56,9 @@ namespace GameFramework.Content.Engine
         // Toggle for collider on and off. 
         public bool CollisionEnabled = true;
 
+        // Toggle for if the object is part of the UI or not.
+        public bool IsUI { get; set; } = false;
+
 
         // Monogame calls Game1.Updtae as part of its loop, my framework will eventually pass that update down. 
         public virtual void Update(GameTime gameTime)

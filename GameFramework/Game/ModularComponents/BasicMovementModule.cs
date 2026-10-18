@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GameFramework
 {
-    public abstract class BasicMovementModule : Component
+    public class BasicMovementModule : Component
     {
         public float speed { get; set; }
         public bool UseWASD { get; set; } = true;
@@ -90,7 +90,10 @@ namespace GameFramework
 
                 Vector2 delta = dir * speed * Owner.deltaTime;
 
-                Owner.validMove(delta);
+                float dt = Owner.deltaTime;
+
+                Owner.validMove(new Vector2(dir.X * speed * dt, 0));   // horizontal, checked on its own
+                Owner.validMove(new Vector2(0, dir.Y * speed * dt));   // vertical, checked on its own
             }
 
         }

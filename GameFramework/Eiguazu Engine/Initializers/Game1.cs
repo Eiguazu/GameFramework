@@ -1,4 +1,5 @@
 ﻿using GameFramework.Content.Engine;
+using GameFramework.Content.Game;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -21,7 +22,7 @@ namespace GameFramework
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            DefaultGameObject = new DefaultGameObject();
+            DefaultGameObject = new DefaultGameObject(new Vector2(0,0));
         }
 
         protected override void Initialize()
@@ -38,22 +39,18 @@ namespace GameFramework
 
             SetWindowSize(1280, 720);
 
-            // ____________________________
-            // Scene loading goes here
-            // Default scene provided above
-            // ----------------------------
-
-
             // ___________________________
             // Animation loading goes here
+            // AssetManager.Instance.LoadAnimation("BloodSample", Sprites.BloodSample);
             // ---------------------------
 
-
-            // ____________________________
-            // GameObject loading goes here
-            // ----------------------------
-
             _engine = new Engine(BuildScene("Default"));
+
+            // ___________________________
+            // Dialouge loading goes here
+            // DialogueLibrary.SetLine("NPC1-1", "Come see me when you have the blood sample and murder weapon.");
+            // ---------------------------
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -83,10 +80,17 @@ namespace GameFramework
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // For pixel art
+            // Draw world objects with the camera.
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.GetMatrix(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height));
+
+            _engine.Draw(_spriteBatch, false);
+
+            _spriteBatch.End();
+
+            // Draw UI objects without the camera.
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            _engine.Draw(_spriteBatch);
+            _engine.Draw(_spriteBatch, true);
 
             _spriteBatch.End();
 

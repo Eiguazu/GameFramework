@@ -43,14 +43,18 @@ namespace GameFramework.Content.Engine
         }
 
         // Draws all objects in a scene. ToArray mkakes so the forech deos not throw a invalid operation exception. Also sorts it now by layer.
-        public virtual void Draw(SpriteBatch spriteBatch)
+        // Draws world objects or UI objects separately.
+        public virtual void Draw(SpriteBatch spriteBatch, bool drawUI)
         {
             GameObject[] snapshot = Objects.ToArray();
             Array.Sort(snapshot, CompareByLayer);
 
             foreach (GameObject gameObject in snapshot)
             {
-                gameObject.Draw(spriteBatch);
+                if (gameObject.IsUI == drawUI)
+                {
+                    gameObject.Draw(spriteBatch);
+                }
             }
         }
 
