@@ -13,6 +13,7 @@ namespace GameFramework
         {
             public override void Update(GameTime gameTime)
             {
+                Camera.Enabled = true;
                 Camera.Position = Owner.Transform.Position;
             }
         }

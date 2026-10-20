@@ -71,5 +71,19 @@ namespace GameFramework.Content.Engine
         {
             return currentKeys.IsKeyDown(key);
         }
+
+        public static Vector2 GetMouseDirection(Vector2 origin)
+        {
+            Vector2 mouseWorld = MousePosition() + Camera.Position - Camera.GetScreenCenter();
+
+            Vector2 direction = mouseWorld - origin;
+
+            if (direction != Vector2.Zero)
+            {
+                direction.Normalize();
+            }
+
+            return direction;
+        }
     }
 }

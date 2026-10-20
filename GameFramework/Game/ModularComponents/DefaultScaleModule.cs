@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace GameFramework
 {
-    public class ScaleModule : Component
+    public class DefaultScaleModule : Component
     {
         public float TargetSize { get; set; } = 40f;
         private bool scaled = false;

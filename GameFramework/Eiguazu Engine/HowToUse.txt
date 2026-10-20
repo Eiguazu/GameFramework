@@ -220,6 +220,7 @@ deltaTime - preset delta time for easier use within objects.
 List<Component> components - List of components that are added to a gameObject. 
 AddComponent(Component component) - Adds a module as a component. 
 IsUI - deternimenes if the gameobject is being used for UI or not. If it is, it is rendered seperately to other objects and not used in the camera. 
+ContainsPoint(Vector2 point) - returns if mouse is over gameobjects. 
 
 
 Just like the scenes, specific gameobjects such as player inherit from GameObject. They would be added to the scene and would need to overide the Update and Draw methods. Always call 
@@ -430,6 +431,7 @@ LeftHeld() - Returns true if the left mouse button is held down.
 RightHeld() - Returns true if the right mouse button is held down.
 KeyPressed(Keys key) - Returns true if the specified key is pressed.
 KeyHeld(Keys key) - Returns true if the specified key is held down.
+GetMouseDirection(Vector2 origin) -  Gets the direction of the mouse. Origin is where the object is aiming from (player).
 ex. 
     if (Input.KeyPressed(Keys.Space))
     {
@@ -518,6 +520,15 @@ ex.
     // From any object:
     string line = DialogueLibrary.GetLine("rabbit");
 
+--Camera--
+A built in camera designed to follow the player or be adjusted as needed. Uses matrecies. 
+Enabled - Toggles camera on and off. 
+
+Methods
+GetMatrix(int screenWidth, int screenHeight) -  Uses a matrix for a screen as a matrix allows for simoutanious change of all objects, creating a illusuion
+of a camera while in reality just moving the axis everything else is based on. 
+
+
 --Game1--
 MonoGame's entry point instead of main for some reason. This connects MonoGame to my framework. 
 Game1() - Sets up stuff idk.  
@@ -591,19 +602,28 @@ ex.
     AddComponent(new FollowModule { TargetTag = "Player", Speed = 80f });
 
 --InventoryModule--
-Adds a inventory to the attached object. There is no need to initalize inventory.  
+Adds a inventory to the attached object. 
 Add(string itemName) - adds the name of a item.
 Has(string itemName) - tells object if they have the item or not.
 Clear() - clears inventory. 
 
 ex. 
-    InventoryModule inventory = player.GetComponent<InventoryModule>();
-    Inventory.AddItem("BloodSample");
+    GameObject player = Owner.Scene.Find("Player");
 
-     if (Inventory.Has("BloodSample") && Inventory.Has("MurderWeapon"))
-     {
-        textbox.Show("NPC1-4");
-     }
+    if (player != null)
+    {
+        InventoryModule inventory = player.GetComponent<InventoryModule>();
+
+        if (inventory != null)
+        {
+            inventory.AddItem("BloodSample");
+
+            if (inventory.HasItem("BloodSample") && inventory.HasItem("MurderWeapon"))
+            {
+                textbox.Show("NPC1-4");
+            }
+        }
+    }
 
 --SceneTransitionModule--
 TargetScene - string of the target scene. 

@@ -116,13 +116,25 @@ namespace GameFramework.Content.Engine
             Vector2 previous = Transform.Position;
             Transform.Position += delta;
 
+
+            if (!Solid)
+            {
+                return true;
+            }
+
+
             List<GameObject> solids = Scene.GetSolidObjects();
             for (int i = 0; i < solids.Count; i++)
             {
-                if (solids[i] != this && Intersects(solids[i]))
+                if (solids[i] == this || !solids[i].Solid)
+                {
+                    continue;
+                }
+
+                if (Intersects(solids[i]))
                 {
                     Transform.Position = previous;
-                    return false; 
+                    return false;
                 }
 
             }
@@ -151,6 +163,17 @@ namespace GameFramework.Content.Engine
             CollisionEnabled = !CollisionEnabled;
         }
 
+        // Tracks if mouse cursor is over gameobject.
+        public bool ContainsPoint(Vector2 point)
+        {
+            if (!CollisionEnabled)
+            {
+                return false;
+            }
+
+            Rectangle bounds = Collider.GetBounds(Transform, SpriteRenderer);
+            return bounds.Contains(point);
+        }
     }
 }
 
