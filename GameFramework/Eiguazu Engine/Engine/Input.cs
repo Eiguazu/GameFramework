@@ -72,6 +72,7 @@ namespace GameFramework.Content.Engine
             return currentKeys.IsKeyDown(key);
         }
 
+        // Gets the direction of the mouse. Origin is where the object is aiming from (player).
         public static Vector2 GetMouseDirection(Vector2 origin)
         {
             Vector2 mouseWorld = MousePosition() + Camera.Position - Camera.GetScreenCenter();

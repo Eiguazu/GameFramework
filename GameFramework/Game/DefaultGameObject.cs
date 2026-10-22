@@ -38,7 +38,8 @@ namespace GameFramework
             // Alternatively, components can be added through the field. Set up a new field creating the componenet like normal and you should
             // be able to acess its variables at any time. 
             // private BasicMovementModule mod1 = new BasicMovementModule(); and use mod1. You still have to use AddComponent, AddComponent(mod1)
-            // in this case. 
+            // in this case.  
+
         }
 
         public override void Update(GameTime gameTime)
