@@ -130,7 +130,7 @@ namespace GameFramework.Content.Engine
 
 
         // Gets the name of the current animation. 
-        public string CurrentAnimationName()
+        public string CurrentAnimationName
         {
             get { return currentAnimation; }
         }
