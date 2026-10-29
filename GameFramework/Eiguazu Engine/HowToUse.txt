@@ -312,6 +312,10 @@ PlayLoop(name) - Plays the animation over and over.
 PlayOnce(name) - Plays once and then holds the last frame.
 Play(name, loop, restart) - The shared mehtod behind both PlayLoop(name) and PlayOnce(name).
 CurrentFrame - Returns the index of the currently playing frame (an int). Read-only.
+CurrentAnimationName - Returns the current animation name. Read-only. 
+NextFrame() - Moves on immediately to next frame in sequence. 
+Stop() - Stops the animation. 
+
 
 Calling things like PlayLoop("Walk") every frame is safe. If "Walk is already looping, -nothing ever happens- so it doesn't restart. Playing a differetn name replaces the current animation
 and starts at frame zero. There is no queue. Calling things like PlayOnce("Attack') is also safe, but it woun't replay once finished. To replay, you have to use Play("Attack", false, true). 
@@ -523,6 +527,7 @@ ex.
 --Camera--
 A built in camera designed to follow the player or be adjusted as needed. Uses matrecies. 
 Enabled - Toggles camera on and off. 
+Zoom - Tells the camera how much to zoom in. 
 
 Methods
 GetMatrix(int screenWidth, int screenHeight) -  Uses a matrix for a screen as a matrix allows for simoutanious change of all objects, creating a illusuion

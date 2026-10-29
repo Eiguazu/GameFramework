@@ -13,7 +13,12 @@ namespace GameFramework
         public static Vector2 Position = Vector2.Zero;
         // Gets screen center. 
         private static Vector2 screenCenter = Vector2.Zero;
+
+        // Toggle for if the camera is on or off. 
         public static bool Enabled = false;
+
+        // Controls how much the camera is zoomed in. 
+        public static float Zoom = 1f;
 
         // Use matrix for a screen as a matrix allows for simoutanious change of all objects. 
         public static Matrix GetMatrix(int screenWidth, int screenHeight)
@@ -26,6 +31,14 @@ namespace GameFramework
             return Matrix.CreateTranslation(-Position.X, -Position.Y, 0) * Matrix.CreateTranslation(screenWidth / 2f, screenHeight / 2f, 0);
         }
 
+        // Sets the screen size. 
+        public static void SetScreenSize(int width, int height)
+        {
+            screenCenter = new Vector2(width / 2f, height / 2f);
+        }
+
+
+        // Finds the screen center. 
         public static Vector2 GetScreenCenter()
         {
             return screenCenter;

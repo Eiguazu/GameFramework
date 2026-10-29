@@ -94,6 +94,57 @@ namespace GameFramework.Content.Engine
         {
             get { return currentFrame; }
         }
+
+        // Moves onto the next frame when called. 
+        public void NextFrame()
+        {
+            if (string.IsNullOrEmpty(currentAnimation))
+            {
+                return;
+            }
+
+            int animationLength = AssetManager.Instance.GetAnimationLength(currentAnimation);
+
+            if (animationLength <= 0)
+            {
+                return;
+            }
+
+            currentFrame++;
+
+            if (currentFrame >= animationLength)
+            {
+                if (looping)
+                {
+                    currentFrame = 0;
+                }
+                else
+                {
+                    currentFrame = animationLength - 1;
+                    IsFinished = true;
+                }
+            }
+
+            animationTimer = 0;
+        }
+
+
+        // Gets the name of the current animation. 
+        public string CurrentAnimationName()
+        {
+            get { return currentAnimation; }
+        }
+
+
+        // Stops animation
+        public void Stop()
+        {
+            IsFinished = true;
+            animationTimer = 0;
+        }
+
+
     }
+
 
 }
